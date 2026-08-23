@@ -241,7 +241,7 @@ export class RiotService {
   }
 
   // Strictly fetch Ranked Solo/Duo 5v5 matches (queue = 420)
-  async fetchRecentMatchIds(puuid: string, region: RegionRouting, count: number = 20): Promise<string[]> {
+  async fetchRecentMatchIds(puuid: string, region: RegionRouting, count: number = 100): Promise<string[]> {
     const regional = getRegionalRouting(region);
     const url = `https://${regional}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?queue=420&start=0&count=${count}`;
     try {
@@ -255,7 +255,7 @@ export class RiotService {
   async fetchMatchDetails(matchId: string, region: RegionRouting) {
     const regional = getRegionalRouting(region);
     const url = `https://${regional}.api.riotgames.com/lol/match/v5/matches/${matchId}`;
-    return await this.makeRequest<any>(url, 3600000); // Cache matches 1 hour
+    return await this.makeRequest<any>(url, 86400000); // Cache matches for 24 hours
   }
 
   async fetchPlayerLiveStats(player: Player): Promise<Player> {
@@ -306,21 +306,30 @@ export class RiotService {
       const winRate = totalGames > 0 ? Number(((wins / totalGames) * 100).toFixed(1)) : 0;
       const calculatedMMR = calculateMMR(tier, division, leaguePoints);
 
-      // 3. Fetch recent Ranked Solo/Duo match history (Queue 420 ONLY)
+      // 3. Fetch ALL Ranked Solo/Duo matches of the 2026 season (Queue 420 ONLY)
       let recentMatches: RecentMatch[] = [];
       let recentMatchesSummary: ('W' | 'L')[] = [];
       let profileIconId = player.profileIconId || 29;
       let summonerLevel = player.summonerLevel || 30;
 
+      const champMap = new Map<string, {
+        championId: number;
+        championName: string;
+        games: number;
+        wins: number;
+        losses: number;
+        kills: number;
+        deaths: number;
+        assists: number;
+      }>();
+
       try {
-        const matchIds = await this.fetchRecentMatchIds(puuid, player.region, 20);
+        const matchIds = await this.fetchRecentMatchIds(puuid, player.region, 100);
         if (matchIds && matchIds.length > 0) {
           const matchSummaries: ('W' | 'L')[] = [];
           const fetchedMatches: RecentMatch[] = [];
 
           for (const mId of matchIds) {
-            if (fetchedMatches.length >= 10) break; // Limit to 10 recent SoloQ games
-
             try {
               const match = await this.fetchMatchDetails(mId, player.region);
               
@@ -338,130 +347,151 @@ export class RiotService {
                 const won = Boolean(p.win);
                 matchSummaries.push(won ? 'W' : 'L');
 
-                const durationMin = Math.max(1, (match.info.gameDuration || 1) / 60);
-
-                const allParticipants: MatchParticipant[] = rawParticipants.map((part: any) => {
-                  const isSelf = part.puuid === puuid;
-                  const k = part.kills || 0;
-                  const d = part.deaths || 0;
-                  const a = part.assists || 0;
-                  const kdaRatio = d === 0 ? 'Perfect' : ((k + a) / d).toFixed(2);
-                  const totalMinions = (part.totalMinionsKilled || 0) + (part.neutralMinionsKilled || 0);
-
-                  return {
-                    puuid: part.puuid,
-                    summonerName: part.riotIdGameName || part.summonerName || 'Invocador',
-                    riotIdGameName: part.riotIdGameName || part.summonerName || 'Invocador',
-                    riotIdTagline: part.riotIdTagline || '',
-                    championId: part.championId,
-                    championName: part.championName,
-                    champLevel: part.champLevel || 1,
-                    teamId: part.teamId || 100,
-                    win: Boolean(part.win),
-                    kills: k,
-                    deaths: d,
-                    assists: a,
-                    kdaRatio: `${kdaRatio}:1`,
-                    damageDealt: part.totalDamageDealtToChampions || 0,
-                    damageTaken: part.totalDamageTaken || 0,
-                    goldEarned: part.goldEarned || 0,
-                    cs: totalMinions,
-                    csPerMin: Number((totalMinions / durationMin).toFixed(1)),
-                    visionScore: part.visionScore || 0,
-                    controlWards: part.detectorWardsPlaced || part.visionWardsBoughtInGame || 0,
-                    items: [part.item0 || 0, part.item1 || 0, part.item2 || 0, part.item3 || 0, part.item4 || 0, part.item5 || 0, part.item6 || 0],
-                    spells: [part.summoner1Id || 4, part.summoner2Id || 12],
-                    primaryRuneId: part.perks?.styles?.[0]?.selections?.[0]?.perk,
-                    secondaryRuneStyleId: part.perks?.styles?.[1]?.style,
-                    role: part.teamPosition || part.individualPosition || part.role || 'MID',
-                    isSelf,
-                  };
-                });
-
-                const blueParts = allParticipants.filter((pt) => pt.teamId === 100);
-                const redParts = allParticipants.filter((pt) => pt.teamId === 200);
-
-                const blueTeamObj = match.info?.teams?.find((t: any) => t.teamId === 100);
-                const redTeamObj = match.info?.teams?.find((t: any) => t.teamId === 200);
-
-                const blueTeam: MatchTeam = {
-                  teamId: 100,
-                  win: blueParts.length > 0 ? blueParts[0].win : false,
-                  totalKills: blueParts.reduce((acc, pt) => acc + pt.kills, 0),
-                  totalDeaths: blueParts.reduce((acc, pt) => acc + pt.deaths, 0),
-                  totalAssists: blueParts.reduce((acc, pt) => acc + pt.assists, 0),
-                  totalGold: blueParts.reduce((acc, pt) => acc + pt.goldEarned, 0),
-                  totalDamage: blueParts.reduce((acc, pt) => acc + pt.damageDealt, 0),
-                  dragons: blueTeamObj?.objectives?.dragon?.kills || 0,
-                  barons: blueTeamObj?.objectives?.baron?.kills || 0,
-                  towers: blueTeamObj?.objectives?.tower?.kills || 0,
-                  participants: blueParts,
-                };
-
-                const redTeam: MatchTeam = {
-                  teamId: 200,
-                  win: redParts.length > 0 ? redParts[0].win : false,
-                  totalKills: redParts.reduce((acc, pt) => acc + pt.kills, 0),
-                  totalDeaths: redParts.reduce((acc, pt) => acc + pt.deaths, 0),
-                  totalAssists: redParts.reduce((acc, pt) => acc + pt.assists, 0),
-                  totalGold: redParts.reduce((acc, pt) => acc + pt.goldEarned, 0),
-                  totalDamage: redParts.reduce((acc, pt) => acc + pt.damageDealt, 0),
-                  dragons: redTeamObj?.objectives?.dragon?.kills || 0,
-                  barons: redTeamObj?.objectives?.baron?.kills || 0,
-                  towers: redTeamObj?.objectives?.tower?.kills || 0,
-                  participants: redParts,
-                };
-
-                // Calculate Kill Participation for each participant
-                allParticipants.forEach((pt) => {
-                  const team = pt.teamId === 100 ? blueTeam : redTeam;
-                  pt.killParticipation = team.totalKills > 0
-                    ? `${Math.round(((pt.kills + pt.assists) / team.totalKills) * 100)}%`
-                    : '0%';
-                });
-
-                const selfTeam = p.teamId === 100 ? blueTeam : redTeam;
-                const kp = selfTeam.totalKills > 0
-                  ? `${Math.round(((p.kills + p.assists) / selfTeam.totalKills) * 100)}%`
-                  : '0%';
-
-                const totalCs = (p.totalMinionsKilled || 0) + (p.neutralMinionsKilled || 0);
-
-                fetchedMatches.push({
-                  matchId: mId,
-                  gameCreation: match.info.gameCreation,
-                  gameDuration: match.info.gameDuration,
-                  gameMode: 'CLASSIC',
-                  queueId: 420,
-                  win: won,
+                // Aggregate complete champion statistics across all 2026 SoloQ matches
+                const existing = champMap.get(p.championName) || {
                   championId: p.championId,
                   championName: p.championName,
-                  champLevel: p.champLevel || 1,
-                  kills: p.kills,
-                  deaths: p.deaths,
-                  assists: p.assists,
-                  kda: `${p.kills}/${p.deaths}/${p.assists}`,
-                  kdaRatio: `${p.deaths === 0 ? 'Perfect' : ((p.kills + p.assists) / p.deaths).toFixed(2)}:1`,
-                  killParticipation: kp,
-                  cs: totalCs,
-                  csPerMin: Number((totalCs / durationMin).toFixed(1)),
-                  damageDealt: p.totalDamageDealtToChampions || 0,
-                  damageTaken: p.totalDamageTaken || 0,
-                  goldEarned: p.goldEarned || 0,
-                  visionScore: p.visionScore || 0,
-                  controlWards: p.detectorWardsPlaced || p.visionWardsBoughtInGame || 0,
-                  items: [p.item0 || 0, p.item1 || 0, p.item2 || 0, p.item3 || 0, p.item4 || 0, p.item5 || 0, p.item6 || 0],
-                  spells: [p.summoner1Id || 4, p.summoner2Id || 12],
-                  primaryRuneId: p.perks?.styles?.[0]?.selections?.[0]?.perk,
-                  secondaryRuneStyleId: p.perks?.styles?.[1]?.style,
-                  role: p.teamPosition || p.role,
-                  lane: p.lane,
-                  teams: {
-                    blue: blueTeam,
-                    red: redTeam,
-                  },
-                  participants: allParticipants,
-                });
+                  games: 0,
+                  wins: 0,
+                  losses: 0,
+                  kills: 0,
+                  deaths: 0,
+                  assists: 0,
+                };
+                existing.games += 1;
+                if (won) existing.wins += 1;
+                else existing.losses += 1;
+                existing.kills += p.kills || 0;
+                existing.deaths += p.deaths || 0;
+                existing.assists += p.assists || 0;
+                champMap.set(p.championName, existing);
+
+                // For the match history modal, keep the top 15 most recent detailed matches
+                if (fetchedMatches.length < 15) {
+                  const durationMin = Math.max(1, (match.info.gameDuration || 1) / 60);
+
+                  const allParticipants: MatchParticipant[] = rawParticipants.map((part: any) => {
+                    const isSelf = part.puuid === puuid;
+                    const k = part.kills || 0;
+                    const d = part.deaths || 0;
+                    const a = part.assists || 0;
+                    const kdaRatio = d === 0 ? 'Perfect' : ((k + a) / d).toFixed(2);
+                    const totalMinions = (part.totalMinionsKilled || 0) + (part.neutralMinionsKilled || 0);
+
+                    return {
+                      puuid: part.puuid,
+                      summonerName: part.riotIdGameName || part.summonerName || 'Invocador',
+                      riotIdGameName: part.riotIdGameName || part.summonerName || 'Invocador',
+                      riotIdTagline: part.riotIdTagline || '',
+                      championId: part.championId,
+                      championName: part.championName,
+                      champLevel: part.champLevel || 1,
+                      teamId: part.teamId || 100,
+                      win: Boolean(part.win),
+                      kills: k,
+                      deaths: d,
+                      assists: a,
+                      kdaRatio: `${kdaRatio}:1`,
+                      damageDealt: part.totalDamageDealtToChampions || 0,
+                      damageTaken: part.totalDamageTaken || 0,
+                      goldEarned: part.goldEarned || 0,
+                      cs: totalMinions,
+                      csPerMin: Number((totalMinions / durationMin).toFixed(1)),
+                      visionScore: part.visionScore || 0,
+                      controlWards: part.detectorWardsPlaced || part.visionWardsBoughtInGame || 0,
+                      items: [part.item0 || 0, part.item1 || 0, part.item2 || 0, part.item3 || 0, part.item4 || 0, part.item5 || 0, part.item6 || 0],
+                      spells: [part.summoner1Id || 4, part.summoner2Id || 12],
+                      primaryRuneId: part.perks?.styles?.[0]?.selections?.[0]?.perk,
+                      secondaryRuneStyleId: part.perks?.styles?.[1]?.style,
+                      role: part.teamPosition || part.individualPosition || part.role || 'MID',
+                      isSelf,
+                    };
+                  });
+
+                  const blueParts = allParticipants.filter((pt) => pt.teamId === 100);
+                  const redParts = allParticipants.filter((pt) => pt.teamId === 200);
+
+                  const blueTeamObj = match.info?.teams?.find((t: any) => t.teamId === 100);
+                  const redTeamObj = match.info?.teams?.find((t: any) => t.teamId === 200);
+
+                  const blueTeam: MatchTeam = {
+                    teamId: 100,
+                    win: blueParts.length > 0 ? blueParts[0].win : false,
+                    totalKills: blueParts.reduce((acc, pt) => acc + pt.kills, 0),
+                    totalDeaths: blueParts.reduce((acc, pt) => acc + pt.deaths, 0),
+                    totalAssists: blueParts.reduce((acc, pt) => acc + pt.assists, 0),
+                    totalGold: blueParts.reduce((acc, pt) => acc + pt.goldEarned, 0),
+                    totalDamage: blueParts.reduce((acc, pt) => acc + pt.damageDealt, 0),
+                    dragons: blueTeamObj?.objectives?.dragon?.kills || 0,
+                    barons: blueTeamObj?.objectives?.baron?.kills || 0,
+                    towers: blueTeamObj?.objectives?.tower?.kills || 0,
+                    participants: blueParts,
+                  };
+
+                  const redTeam: MatchTeam = {
+                    teamId: 200,
+                    win: redParts.length > 0 ? redParts[0].win : false,
+                    totalKills: redParts.reduce((acc, pt) => acc + pt.kills, 0),
+                    totalDeaths: redParts.reduce((acc, pt) => acc + pt.deaths, 0),
+                    totalAssists: redParts.reduce((acc, pt) => acc + pt.assists, 0),
+                    totalGold: redParts.reduce((acc, pt) => acc + pt.goldEarned, 0),
+                    totalDamage: redParts.reduce((acc, pt) => acc + pt.damageDealt, 0),
+                    dragons: redTeamObj?.objectives?.dragon?.kills || 0,
+                    barons: redTeamObj?.objectives?.baron?.kills || 0,
+                    towers: redTeamObj?.objectives?.tower?.kills || 0,
+                    participants: redParts,
+                  };
+
+                  allParticipants.forEach((pt) => {
+                    const team = pt.teamId === 100 ? blueTeam : redTeam;
+                    pt.killParticipation = team.totalKills > 0
+                      ? `${Math.round(((pt.kills + pt.assists) / team.totalKills) * 100)}%`
+                      : '0%';
+                  });
+
+                  const selfTeam = p.teamId === 100 ? blueTeam : redTeam;
+                  const kp = selfTeam.totalKills > 0
+                    ? `${Math.round(((p.kills + p.assists) / selfTeam.totalKills) * 100)}%`
+                    : '0%';
+
+                  const totalCs = (p.totalMinionsKilled || 0) + (p.neutralMinionsKilled || 0);
+
+                  fetchedMatches.push({
+                    matchId: mId,
+                    gameCreation: match.info.gameCreation,
+                    gameDuration: match.info.gameDuration,
+                    gameMode: 'CLASSIC',
+                    queueId: 420,
+                    win: won,
+                    championId: p.championId,
+                    championName: p.championName,
+                    champLevel: p.champLevel || 1,
+                    kills: p.kills,
+                    deaths: p.deaths,
+                    assists: p.assists,
+                    kda: `${p.kills}/${p.deaths}/${p.assists}`,
+                    kdaRatio: `${p.deaths === 0 ? 'Perfect' : ((p.kills + p.assists) / p.deaths).toFixed(2)}:1`,
+                    killParticipation: kp,
+                    cs: totalCs,
+                    csPerMin: Number((totalCs / durationMin).toFixed(1)),
+                    damageDealt: p.totalDamageDealtToChampions || 0,
+                    damageTaken: p.totalDamageTaken || 0,
+                    goldEarned: p.goldEarned || 0,
+                    visionScore: p.visionScore || 0,
+                    controlWards: p.detectorWardsPlaced || p.visionWardsBoughtInGame || 0,
+                    items: [p.item0 || 0, p.item1 || 0, p.item2 || 0, p.item3 || 0, p.item4 || 0, p.item5 || 0, p.item6 || 0],
+                    spells: [p.summoner1Id || 4, p.summoner2Id || 12],
+                    primaryRuneId: p.perks?.styles?.[0]?.selections?.[0]?.perk,
+                    secondaryRuneStyleId: p.perks?.styles?.[1]?.style,
+                    role: p.teamPosition || p.role,
+                    lane: p.lane,
+                    teams: {
+                      blue: blueTeam,
+                      red: redTeam,
+                    },
+                    participants: allParticipants,
+                  });
+                }
               }
             } catch (err) {
               console.warn(`Could not fetch details for match ${mId}`);
@@ -483,38 +513,6 @@ export class RiotService {
       const recentWins = recentMatchesSummary.slice(0, 5).filter((r) => r === 'W').length;
       const recentLosses = recentMatchesSummary.slice(0, 5).filter((r) => r === 'L').length;
       const trend = (recentWins - recentLosses) * 18;
-
-      // Calculate top champions from recent matches
-      const champMap = new Map<string, {
-        championId: number;
-        championName: string;
-        games: number;
-        wins: number;
-        losses: number;
-        kills: number;
-        deaths: number;
-        assists: number;
-      }>();
-
-      for (const m of recentMatches) {
-        const existing = champMap.get(m.championName) || {
-          championId: m.championId,
-          championName: m.championName,
-          games: 0,
-          wins: 0,
-          losses: 0,
-          kills: 0,
-          deaths: 0,
-          assists: 0,
-        };
-        existing.games += 1;
-        if (m.win) existing.wins += 1;
-        else existing.losses += 1;
-        existing.kills += m.kills;
-        existing.deaths += m.deaths;
-        existing.assists += m.assists;
-        champMap.set(m.championName, existing);
-      }
 
       const topChampions: ChampionStat[] = Array.from(champMap.values())
         .map((c) => {
