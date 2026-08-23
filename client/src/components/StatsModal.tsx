@@ -280,7 +280,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     }
   }
 
-  const MIN_CHAMPION_GAMES_THRESHOLD = 15;
+  const MIN_CHAMPION_GAMES_THRESHOLD = 8;
 
   const champWinrates: TournamentChampStat[] = Array.from(champAggMap.values())
     .filter((c) => c.games >= MIN_CHAMPION_GAMES_THRESHOLD)
@@ -577,7 +577,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                   <Target className="w-4 h-4 text-emerald-400" />
                 </h4>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  El campeón más letal del torneo (Mínimo 15 partidas)
+                  El campeón más letal del torneo (Mínimo 8 partidas)
                 </p>
               </div>
 
@@ -672,9 +672,9 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               ) : (
                 <div className="text-center py-8 text-xs text-slate-400 space-y-1.5">
                   <Target className="w-8 h-8 text-emerald-400/40 mx-auto mb-1" />
-                  <p className="font-semibold text-slate-300">Mínimo 15 partidas requeridas</p>
+                  <p className="font-semibold text-slate-300">Mínimo 8 partidas requeridas</p>
                   <p className="text-slate-500 text-[11px]">
-                    Ningún campeón ha alcanzado 15 partidas en SoloQ todavía.
+                    Ningún campeón ha alcanzado 8 partidas en SoloQ todavía.
                   </p>
                 </div>
               )}
