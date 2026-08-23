@@ -34,7 +34,7 @@ interface LeaderboardProps {
   refreshingPlayerId: string | null;
 }
 
-type SortField = 'MMR' | 'WINRATE' | 'GAMES' | 'WINS';
+type SortField = 'MMR' | 'TREND' | 'WINRATE' | 'GAMES' | 'WINS';
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({
   players,
@@ -73,6 +73,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
       })
       .sort((a, b) => {
         switch (sortField) {
+          case 'TREND':
+            return b.stats.trend - a.stats.trend || b.stats.calculatedMMR - a.stats.calculatedMMR;
           case 'WINRATE':
             return b.stats.winRate - a.stats.winRate;
           case 'GAMES':
@@ -139,6 +141,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
               className="bg-[#080c14] border border-slate-700/80 text-white text-xs font-semibold rounded-xl px-3.5 py-2 focus:outline-none focus:border-cyan-400 cursor-pointer"
             >
               <option value="MMR">Rango / LP (Default)</option>
+              <option value="TREND">🚀 Mayor Subida de LP (El Trepador)</option>
               <option value="WINRATE">Mayor Winrate %</option>
               <option value="WINS">Más Victorias</option>
               <option value="GAMES">Más Partidas</option>

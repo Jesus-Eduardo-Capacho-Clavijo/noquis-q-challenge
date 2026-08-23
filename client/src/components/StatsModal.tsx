@@ -12,6 +12,8 @@ import {
   Award,
   Eye,
   Coins,
+  TrendingUp,
+  TrendingDown,
 } from 'lucide-react';
 
 interface StatsModalProps {
@@ -190,6 +192,9 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   );
   const pinkRank = [...playerPerfs].sort(
     (a, b) => b.totalControlWards - a.totalControlWards || b.avgControlWards - a.avgControlWards
+  );
+  const trendRank = [...playerPerfs].sort(
+    (a, b) => b.player.stats.trend - a.player.stats.trend || b.player.stats.calculatedMMR - a.player.stats.calculatedMMR
   );
 
   // Aggregate stats
@@ -497,7 +502,126 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             )}
           </div>
 
-          {/* 2. KDA SECTION (Podium Showcase) */}
+          {/* 2. EL TREPADOR DEL TORNEO (MAYOR SUBIDA DE LP / TREND) */}
+          <div className="bg-gradient-to-b from-[#091a18] via-[#0b101c] to-[#070c14] border border-emerald-500/40 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl shadow-emerald-950/20">
+            <div className="text-center space-y-0.5">
+              <h4 className="text-sm font-black tracking-widest text-emerald-400 uppercase font-display flex items-center justify-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <span>"EL TREPADOR DEL TORNEO" (MAYOR SUBIDA DE LP)</span>
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+              </h4>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                Mayor racha positiva y ganancia neta de LP en partidas recientes (Trend)
+              </p>
+            </div>
+
+            {trendRank.length === 0 ? (
+              <div className="text-center py-6 text-xs text-slate-500">
+                No hay jugadores registrados en esta posición.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
+                {trendRank.slice(0, 4).map((perf, index) => {
+                  const p = perf.player;
+                  const rankNumber = index + 1;
+                  const tierColor = getTierColorClass(p.stats.tier);
+                  const isTop1 = rankNumber === 1;
+                  const trendVal = p.stats.trend;
+                  const isPositive = trendVal >= 0;
+
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => onSelectPlayer(p)}
+                      className={`bg-[#070b13] hover:bg-[#0e1526] border ${
+                        isTop1
+                          ? 'border-emerald-400 shadow-md shadow-emerald-950/40'
+                          : 'border-slate-800/80 hover:border-emerald-500/40'
+                      } p-4 rounded-2xl transition-all cursor-pointer flex flex-col items-center text-center relative group shadow-sm`}
+                    >
+                      {/* Rank number left badge */}
+                      <span className="absolute top-3 left-3 text-xs font-mono font-bold text-slate-500 group-hover:text-emerald-400">
+                        #{rankNumber}
+                      </span>
+
+                      {/* Avatar with position badge */}
+                      <div className="relative mb-2 mt-1">
+                        <div
+                          className={`w-16 h-16 rounded-full overflow-hidden border-2 ${
+                            isTop1 ? 'border-emerald-400' : 'border-slate-700 group-hover:border-emerald-400'
+                          } transition-colors shadow-inner`}
+                        >
+                          <img
+                            src={p.avatarUrl || getProfileIconUrl(p.profileIconId)}
+                            alt={p.displayName}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {/* Number badge on top right */}
+                        <div
+                          className={`absolute -top-1 -right-1 w-6 h-6 rounded-full ${
+                            isTop1 ? 'bg-emerald-400 text-black' : 'bg-slate-800 text-slate-200 border border-slate-700'
+                          } font-black text-xs flex items-center justify-center shadow-md font-mono border-2 border-[#070b13]`}
+                        >
+                          {rankNumber}
+                        </div>
+                        {/* Role icon on bottom right */}
+                        <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-slate-900 border border-slate-700">
+                          <RoleIcon role={p.primaryRole} size={12} />
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <h5 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors truncate max-w-[120px]">
+                        {p.displayName}
+                      </h5>
+
+                      {/* Tier Tag */}
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${tierColor.badgeBg}`}
+                      >
+                        {p.stats.tier} {p.stats.division}
+                      </span>
+
+                      {/* Trend LP Value */}
+                      <div className="mt-2 text-center">
+                        <span
+                          className={`text-2xl font-black font-mono flex items-center justify-center gap-1 ${
+                            isPositive ? 'text-emerald-400' : 'text-red-400'
+                          }`}
+                        >
+                          {isPositive ? (
+                            <TrendingUp className="w-5 h-5 text-emerald-400 inline" />
+                          ) : (
+                            <TrendingDown className="w-5 h-5 text-red-400 inline" />
+                          )}
+                          {isPositive ? `+${trendVal}` : trendVal} LP
+                        </span>
+
+                        {/* Recent matches pills */}
+                        <div className="flex items-center justify-center gap-1 mt-1.5">
+                          {(p.stats.recentMatchesSummary || ['W', 'L', 'W', 'W', 'L']).slice(0, 5).map((r, idx) => (
+                            <span
+                              key={idx}
+                              className={`w-4 h-4 rounded text-[9px] font-black font-mono flex items-center justify-center ${
+                                r === 'W'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                  : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                              }`}
+                            >
+                              {r === 'W' ? 'V' : 'D'}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* 3. KDA SECTION (Podium Showcase) */}
           <div className="bg-[#0b101c] border border-slate-800/90 rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg shadow-lime-950/10">
             <div className="text-center space-y-0.5">
               <h4 className="text-sm font-black tracking-widest text-[#c6f135] uppercase font-display flex items-center justify-center gap-1.5">
