@@ -1,0 +1,24 @@
+{
+  "name": "Ñoquis Q Challenge 2026",
+  "tagline": "Torneo de SoloQ entre amigos y comunidad",
+  "startDate": "2026-08-15T18:33:45.991Z",
+  "endDate": "2028-09-05T00:00:00.000Z",
+  "prizePool": "20$ Dolares o 5000 mil de rp",
+  "customItemsEnabled": false,
+  "defaultRegion": "la1",
+  "rules": [
+    {
+      "title": "Solo Queue Obligatorio",
+      "description": "Solo cuentan las partidas de Ranked Solo/Duo 5v5 jugadas durante el periodo del torneo."
+    },
+    {
+      "title": "Objetivo de Clasificación",
+      "description": "El ranking se ordena por LP y División alcanzada en SoloQ. Quien alcance mayor elo al final del tiempo gana el desafío."
+    },
+    {
+      "title": "Desempates y Puntuación",
+      "description": "En caso de empate en LP y División, el desempate se decide por el porcentaje de Winrate (%) y mayor cantidad de victorias."
+    }
+  ],
+  "activeApiKey": "RGAPI-ef2ced72-6870-4868-8502-1e29271231fe"
+}

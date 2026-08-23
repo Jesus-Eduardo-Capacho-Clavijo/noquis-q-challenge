@@ -1,0 +1,357 @@
+[
+  {
+    "id": "player-1",
+    "displayName": "Karemuv",
+    "gameName": "ADC de Lilith",
+    "tagLine": "muxe",
+    "region": "la1",
+    "primaryRole": "ADC",
+    "countryCode": "co",
+    "aegisCount": 0,
+    "shellsCount": 0,
+    "tournamentPoints": 0,
+    "stats": {
+      "tier": "DIAMOND",
+      "division": "III",
+      "leaguePoints": 87,
+      "calculatedMMR": 2187,
+      "wins": 65,
+      "losses": 51,
+      "totalGames": 116,
+      "winRate": 56,
+      "hotStreak": false,
+      "veteran": false,
+      "freshBlood": false,
+      "inactive": false,
+      "trend": 18,
+      "recentMatchesSummary": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "L",
+        "L",
+        "L",
+        "L",
+        "L",
+        "W"
+      ],
+      "recentMatches": [
+        {
+          "matchId": "LA1_1742942287",
+          "gameCreation": 1787370854451,
+          "gameDuration": 1653,
+          "gameMode": "CLASSIC",
+          "queueId": 440,
+          "win": false,
+          "championId": 202,
+          "championName": "Jhin",
+          "kills": 7,
+          "deaths": 7,
+          "assists": 6,
+          "kda": "7/7/6",
+          "cs": 201,
+          "csPerMin": 7.3,
+          "items": [
+            1055,
+            6697,
+            6676,
+            3031,
+            6670,
+            0,
+            3340
+          ],
+          "spells": [
+            7,
+            4
+          ],
+          "role": "BOTTOM",
+          "lane": "BOTTOM"
+        },
+        {
+          "matchId": "LA1_1742929178",
+          "gameCreation": 1787368754309,
+          "gameDuration": 1239,
+          "gameMode": "CLASSIC",
+          "queueId": 440,
+          "win": true,
+          "championId": 234,
+          "championName": "Viego",
+          "kills": 9,
+          "deaths": 2,
+          "assists": 5,
+          "kda": "9/2/5",
+          "cs": 142,
+          "csPerMin": 6.9,
+          "items": [
+            6676,
+            6697,
+            1042,
+            2422,
+            2021,
+            3134,
+            3364
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "JUNGLE"
+        },
+        {
+          "matchId": "LA1_1742904158",
+          "gameCreation": 1787364527120,
+          "gameDuration": 1726,
+          "gameMode": "CLASSIC",
+          "queueId": 440,
+          "win": true,
+          "championId": 254,
+          "championName": "Vi",
+          "kills": 4,
+          "deaths": 10,
+          "assists": 10,
+          "kda": "4/10/10",
+          "cs": 134,
+          "csPerMin": 4.7,
+          "items": [
+            3071,
+            6333,
+            0,
+            3078,
+            2422,
+            0,
+            3340
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "JUNGLE"
+        },
+        {
+          "matchId": "LA1_1742890324",
+          "gameCreation": 1787362158840,
+          "gameDuration": 1849,
+          "gameMode": "CLASSIC",
+          "queueId": 440,
+          "win": true,
+          "championId": 131,
+          "championName": "Diana",
+          "kills": 6,
+          "deaths": 10,
+          "assists": 13,
+          "kda": "6/10/13",
+          "cs": 186,
+          "csPerMin": 6,
+          "items": [
+            2510,
+            3157,
+            3152,
+            3020,
+            3145,
+            0,
+            3364
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "JUNGLE"
+        },
+        {
+          "matchId": "LA1_1742774286",
+          "gameCreation": 1787312758001,
+          "gameDuration": 1944,
+          "gameMode": "CLASSIC",
+          "queueId": 420,
+          "win": false,
+          "championId": 62,
+          "championName": "MonkeyKing",
+          "kills": 4,
+          "deaths": 5,
+          "assists": 20,
+          "kda": "4/5/20",
+          "cs": 193,
+          "csPerMin": 6,
+          "items": [
+            3156,
+            3047,
+            3078,
+            3071,
+            1038,
+            0,
+            3364
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "JUNGLE"
+        },
+        {
+          "matchId": "LA1_1742771456",
+          "gameCreation": 1787311905019,
+          "gameDuration": 569,
+          "gameMode": "CLASSIC",
+          "queueId": 420,
+          "win": false,
+          "championId": 62,
+          "championName": "MonkeyKing",
+          "kills": 2,
+          "deaths": 1,
+          "assists": 0,
+          "kda": "2/1/0",
+          "cs": 64,
+          "csPerMin": 6.7,
+          "items": [
+            1101,
+            3057,
+            3155,
+            1028,
+            1036,
+            1042,
+            3340
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "NONE"
+        },
+        {
+          "matchId": "LA1_1742769916",
+          "gameCreation": 1787309805292,
+          "gameDuration": 1450,
+          "gameMode": "CLASSIC",
+          "queueId": 420,
+          "win": false,
+          "championId": 222,
+          "championName": "Jinx",
+          "kills": 2,
+          "deaths": 7,
+          "assists": 4,
+          "kda": "2/7/4",
+          "cs": 178,
+          "csPerMin": 7.4,
+          "items": [
+            1055,
+            6672,
+            3036,
+            0,
+            0,
+            0,
+            3340
+          ],
+          "spells": [
+            21,
+            4
+          ],
+          "role": "BOTTOM",
+          "lane": "BOTTOM"
+        },
+        {
+          "matchId": "LA1_1742485941",
+          "gameCreation": 1787200240610,
+          "gameDuration": 2051,
+          "gameMode": "CLASSIC",
+          "queueId": 440,
+          "win": false,
+          "championId": 62,
+          "championName": "MonkeyKing",
+          "kills": 7,
+          "deaths": 8,
+          "assists": 10,
+          "kda": "7/8/10",
+          "cs": 213,
+          "csPerMin": 6.2,
+          "items": [
+            3071,
+            3026,
+            6610,
+            1028,
+            3047,
+            3133,
+            3364
+          ],
+          "spells": [
+            11,
+            4
+          ],
+          "role": "JUNGLE",
+          "lane": "JUNGLE"
+        },
+        {
+          "matchId": "LA1_1742464409",
+          "gameCreation": 1787196510740,
+          "gameDuration": 3312,
+          "gameMode": "CLASSIC",
+          "queueId": 420,
+          "win": false,
+          "championId": 222,
+          "championName": "Jinx",
+          "kills": 8,
+          "deaths": 16,
+          "assists": 20,
+          "kda": "8/16/20",
+          "cs": 416,
+          "csPerMin": 7.5,
+          "items": [
+            3110,
+            6672,
+            3026,
+            3031,
+            3036,
+            3072,
+            3363
+          ],
+          "spells": [
+            21,
+            4
+          ],
+          "role": "BOTTOM",
+          "lane": "BOTTOM"
+        },
+        {
+          "matchId": "LA1_1742367512",
+          "gameCreation": 1787174838786,
+          "gameDuration": 2177,
+          "gameMode": "CLASSIC",
+          "queueId": 420,
+          "win": true,
+          "championId": 222,
+          "championName": "Jinx",
+          "kills": 3,
+          "deaths": 5,
+          "assists": 17,
+          "kda": "3/5/17",
+          "cs": 212,
+          "csPerMin": 5.8,
+          "items": [
+            1038,
+            6672,
+            3036,
+            3046,
+            1037,
+            1018,
+            3363
+          ],
+          "spells": [
+            21,
+            4
+          ],
+          "role": "BOTTOM",
+          "lane": "BOTTOM"
+        }
+      ],
+      "lastUpdated": "2026-08-22T18:54:34.370Z"
+    },
+    "puuid": "KxKREEbJ_pa5vva6Fb3EFtjkSqnDqa4BFxn3vVny7hPljeXRTOAghGHbVhlSRvEC4k_sa93IrMN_jg",
+    "profileIconId": 3543,
+    "summonerLevel": 52
+  }
+]

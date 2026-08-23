@@ -1,0 +1,27 @@
+{
+  "name": "Ñoquis Q Challenge 2026",
+  "tagline": "Torneo de SoloQ entre amigos y comunidad",
+  "startDate": "2026-08-15T18:30:54.642Z",
+  "endDate": "2026-09-05T18:30:54.643Z",
+  "prizePool": "10,000 RP + Corona de Ñoqui Legendario",
+  "customItemsEnabled": true,
+  "defaultRegion": "la1",
+  "rules": [
+    {
+      "title": "Solo Queue Obligatorio",
+      "description": "Solo cuentan las partidas de Ranked Solo/Duo 5v5 jugadas durante el periodo del torneo."
+    },
+    {
+      "title": "Objetivo de Clasificación",
+      "description": "El ranking se ordena por LP y División alcanzada en SoloQ. Quien alcance mayor elo al final del tiempo gana el desafío."
+    },
+    {
+      "title": "Items Especiales (Aegis & Shells)",
+      "description": "Puntos y bonificaciones acumulables por rachas épicas (+5 victorias seguidas) o misiones comunitarias acordadas."
+    },
+    {
+      "title": "Fair Play",
+      "description": "Prohibido el duo boosteo o el wintrading. Todas las cuentas deben ser jugadas exclusivamente por su participante."
+    }
+  ]
+}

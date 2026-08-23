@@ -1,0 +1,17 @@
+{
+  "name": "noquis-q-challenge",
+  "version": "1.0.0",
+  "description": "SoloQ Challenge leaderboard and stats tracker for friends and custom tournaments",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build": "npm --prefix client run build && npm --prefix server run build",
+    "start": "npm --prefix server start",
+    "postinstall": "npm --prefix client install && npm --prefix server install",
+    "install:all": "npm install && npm --prefix client install && npm --prefix server install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,0 +1,63 @@
+Actúa como un desarrollador web experto (Frontend). Quiero que construyas un clon de alta fidelidad del sitio web "SoloQ Challenge" (https://soloqchallenge.gg/), una plataforma de clasificación y estadísticas para un torneo de streamers de League of Legends.
+
+Por favor, utiliza HTML, Tailwind CSS y JavaScript (o React si prefieres componentes) para construir la estructura. El diseño debe ser "Dark Mode" (fondo muy oscuro, casi negro), con una estética moderna, limpia y orientada a los eSports (textos en blanco/gris claro y detalles que resalten).
+
+Aquí tienes la estructura y especificaciones exactas que debes replicar:
+
+1. Barra de Navegación (Navbar):
+
+    Izquierda: Logo del torneo. Enlaces de navegación horizontales con efecto hover: "Ranking", "Live Games", "Estadísticas", "Pick'em", "Premios", "Tier List".
+
+    Derecha: Botón de "INICIAR SESIÓN" (con estilo de botón delineado o fondo tenue) y los iconos pequeños de Twitch y Kick. Todo en una misma línea y responsivo (menú hamburguesa en móviles).
+
+2. Sección Superior (Hero / Live Streams):
+
+    Debe haber una sección que muestre los streamers que están transmitiendo en directo en ese momento.
+
+    Incluye un texto que diga "Partidas en Stream - Mira quién está en directo ahora" con un contador total que diga, por ejemplo, "7,671 espectadores".
+
+    Muestra un carrusel o cuadrícula de tarjetas pequeñas. Cada tarjeta debe tener: Nombre del streamer (ej. Siler, MFreak), la plataforma (Twitch/Kick), y la cantidad de espectadores. Si están en vivo, pon un indicador de "En directo" en color rojo.
+
+    Incluye un par de botones para "Normas" y "Normas Blue Shell".
+
+    Agrega un temporizador de cuenta regresiva que diga: "El torneo termina en 00d : 00h : 00m : 00s".
+
+3. Controles y Filtros de la Tabla:
+
+    Justo encima de la tabla principal, coloca controles para filtrar datos.
+
+    Botones de liga: "Todos", "High Elo", "Low Elo".
+
+    Una barra de búsqueda ("Buscar streamer").
+
+    Filtros por rol de League of Legends: Botones pequeños (preferiblemente con iconos) para "Todos", "Top", "Jng", "Mid", "Adc", "Sup".
+
+4. Tabla Principal de Clasificación (Leaderboard):
+Esta es la sección central de la página. Crea una tabla con un diseño moderno, filas separadas por bordes sutiles y las siguientes columnas:
+
+    # (Posición): Número en el ranking (1, 2, 3...).
+
+    Streamer: Debe incluir la bandera del país, el nombre del streamer en negrita y un indicador visual si está "LIVE" junto con el logo de su plataforma (Twitch/Kick).
+
+    ID de Riot: El nombre de usuario en el juego en letra más pequeña y gris (ej. eMonkeyz Run#514).
+
+    Rol: El rol que juega (ej. MID, TOP, JNG) con su respectivo icono.
+
+    Elo / LP: El rango actual en mayúsculas (CHALLENGER, GRANDMASTER, MASTER, DIAMOND) y debajo los puntos (ej. 2591 LP). El texto de CHALLENGER debe tener un color azul brillante/celeste; GRANDMASTER en rojo oscuro; MASTER en morado.
+
+    Winrate (V / D): Porcentaje de victorias destacado (ej. 58%) y debajo el desglose de victorias y derrotas (ej. 205V · 144D).
+
+    Tendencia / Últimas 20: Un indicador visual con flechas (▲/▼) que muestre los puntos ganados o perdidos recientemente, o cómo le fue en las últimas 20 partidas.
+
+    Items del torneo: Dos columnas para "Aegis" y "Shells" (con iconos representativos y números enteros).
+
+    Stats: Un botón al final de la fila con el texto "OP.GG".
+
+5. Responsividad:
+La tabla de clasificación debe tener scroll horizontal en pantallas móviles para no romper el diseño, o transformarse en un sistema de tarjetas (cards) donde cada fila de la tabla sea una tarjeta de jugador. El diseño completo debe verse perfecto tanto en móvil como en escritorio.
+
+Consejos adicionales para ti:
+
+    Si la IA que estás usando es de generación iterativa (como v0 de Vercel o Cursor), puedes pedirle primero que haga el "Layout y el Navbar", luego le pasas una segunda instrucción pidiendo "Ahora añade la tabla de Leaderboard con este formato...", así evitas que la IA se abrume y recorte código.
+
+    Dado que hay logos específicos (Twitch, Kick, rangos de LoL), la IA probablemente pondrá iconos genéricos (como de lucide-react o FontAwesome). Una vez que tengas el código, solo tendrás que reemplazar esos iconos por las imágenes reales si deseas un clon 100% idéntico.
