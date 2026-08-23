@@ -66,6 +66,9 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
           <img
             src={getProfileIconUrl(profileIconId)}
             alt={`Icono LoL de ${displayName}`}
+            onError={(e) => {
+              e.currentTarget.src = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/29.jpg';
+            }}
             className="w-full h-full object-cover rounded-inherit border border-slate-700 bg-slate-900 shadow-md"
             title={`Icono de Invocador LoL: ${displayName}`}
           />
@@ -88,6 +91,9 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
       <img
         src={getProfileIconUrl(profileIconId)}
         alt={displayName}
+        onError={(e) => {
+          e.currentTarget.src = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/29.jpg';
+        }}
         className="w-full h-full rounded-inherit border border-slate-700 object-cover bg-slate-900 shadow-md"
         title={`Icono de Invocador de ${displayName}`}
       />

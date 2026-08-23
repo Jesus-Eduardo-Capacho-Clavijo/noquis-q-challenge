@@ -1,12 +1,10 @@
 import { LoLTier, RegionRouting } from '../types';
 
-export const DDRAGON_VERSION = '14.24.1';
+export const DDRAGON_VERSION = '16.16.1';
 
 export function getProfileIconUrl(iconId?: number): string {
-  if (!iconId) {
-    return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/29.png`;
-  }
-  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${iconId}.png`;
+  const id = iconId && iconId > 0 ? iconId : 29;
+  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${id}.jpg`;
 }
 
 export function getChampionIconUrl(championName: string): string {
