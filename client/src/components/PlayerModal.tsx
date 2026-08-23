@@ -19,6 +19,8 @@ import {
   Swords,
   Filter,
   Radio,
+  TrendingUp,
+  TrendingDown,
 } from 'lucide-react';
 
 interface PlayerModalProps {
@@ -450,28 +452,43 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             </div>
 
             <div className="bg-[#0c121e] p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Tendencia & Últimas Partidas
-              </span>
-              <div className="my-2">
-                <span
-                  className={`text-xl font-bold font-mono ${
-                    player.stats.trend >= 0 ? 'text-emerald-400' : 'text-red-400'
-                  }`}
-                >
-                  {player.stats.trend >= 0 ? `+${player.stats.trend}` : player.stats.trend} LP
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  Tendencia Reciente
                 </span>
-                <p className="text-[11px] text-slate-400">En las últimas 5 partidas</p>
+                <span className="text-[10px] text-slate-500 font-mono">Últimas 5</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {(player.stats.recentMatchesSummary || ['W', 'L', 'W', 'W', 'L']).map((r, idx) => (
+              <div className="my-2 flex items-baseline justify-between">
+                <div className="flex items-center gap-1.5">
+                  {player.stats.trend >= 0 ? (
+                    <TrendingUp className="w-5 h-5 text-emerald-400 shrink-0" />
+                  ) : (
+                    <TrendingDown className="w-5 h-5 text-red-400 shrink-0" />
+                  )}
                   <span
-                    key={idx}
-                    className={`w-6 h-6 rounded-md text-[11px] font-bold font-mono flex items-center justify-center ${
-                      r === 'W' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-red-500/20 text-red-300 border border-red-500/40'
+                    className={`text-2xl font-black font-mono ${
+                      player.stats.trend >= 0 ? 'text-emerald-400' : 'text-red-400'
                     }`}
                   >
-                    {r}
+                    {player.stats.trend >= 0 ? `+${player.stats.trend}` : player.stats.trend} LP
+                  </span>
+                </div>
+                <span className="text-xs font-mono font-bold text-slate-300">
+                  {(player.stats.recentMatchesSummary || ['W', 'L', 'W', 'W', 'L']).slice(0, 5).filter(r => r === 'W').length}V - {(player.stats.recentMatchesSummary || ['W', 'L', 'W', 'W', 'L']).slice(0, 5).filter(r => r === 'L').length}D
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 pt-0.5">
+                {(player.stats.recentMatchesSummary || ['W', 'L', 'W', 'W', 'L']).slice(0, 5).map((r, idx) => (
+                  <span
+                    key={idx}
+                    className={`flex-1 h-7 rounded-lg text-xs font-black font-mono flex items-center justify-center transition-all ${
+                      r === 'W'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm shadow-emerald-950/40'
+                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/50 shadow-sm shadow-rose-950/40'
+                    }`}
+                    title={r === 'W' ? 'Victoria' : 'Derrota'}
+                  >
+                    {r === 'W' ? 'V' : 'D'}
                   </span>
                 ))}
               </div>
