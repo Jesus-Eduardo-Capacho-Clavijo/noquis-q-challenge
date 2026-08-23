@@ -209,7 +209,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     { id: 'SUP', label: 'SUP' },
   ];
 
-  // 1. Calculate Champion Winrates across all participants
+  // 1. Calculate Champion Winrates across all participants (strictly from real SoloQ champion games)
   const champAggMap = new Map<string, {
     championName: string;
     championId?: number;
@@ -256,36 +256,15 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         existing.playerWins.set(p.id, curPw);
         champAggMap.set(cName, existing);
       }
-    } else {
-      const defaultChamps: Record<LoLRole, string> = {
-        TOP: 'Aatrox',
-        JNG: 'LeeSin',
-        MID: 'Ahri',
-        ADC: 'Jinx',
-        SUP: 'Thresh',
-      };
-      const champ = formatChampionName(defaultChamps[p.primaryRole] || 'Ahri');
-      const existing = champAggMap.get(champ) || {
-        championName: champ,
-        games: 0,
-        wins: 0,
-        playerWins: new Map(),
-      };
-      const pGames = Math.max(1, p.stats.totalGames || 10);
-      const pWins = p.stats.wins || Math.round(pGames * 0.55);
-      existing.games += pGames;
-      existing.wins += pWins;
-      const curPw = existing.playerWins.get(p.id) || { player: p, wins: 0 };
-      curPw.wins += pWins;
-      existing.playerWins.set(p.id, curPw);
-      champAggMap.set(champ, existing);
     }
   }
 
-  const MIN_CHAMPION_GAMES_THRESHOLD = 8;
+  const allAggChamps = Array.from(champAggMap.values());
+  const hasMinGames = allAggChamps.some((c) => c.games >= 8);
+  const minGamesThreshold = hasMinGames ? 8 : 1;
 
-  const champWinrates: TournamentChampStat[] = Array.from(champAggMap.values())
-    .filter((c) => c.games >= MIN_CHAMPION_GAMES_THRESHOLD)
+  const champWinrates: TournamentChampStat[] = allAggChamps
+    .filter((c) => c.games >= minGamesThreshold)
     .map((c) => {
       const wr = c.games > 0 ? Number(((c.wins / c.games) * 100).toFixed(1)) : 0;
       let bestP: Player | undefined;
@@ -308,12 +287,12 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     })
     .sort((a, b) => b.winRate - a.winRate || b.games - a.games);
 
-  // 2. Calculate OTP (One-Trick Pony) Ranking
+  // 2. Calculate OTP (One-Trick Pony) Ranking strictly from real champion games
   const otpRankings: PlayerOTPStat[] = filteredPlayers
     .map((p) => {
       const topC = p.stats.topChampions || [];
       const recM = p.stats.recentMatches || [];
-      let mainChamp = 'Ahri';
+      let mainChamp = '';
       let mainChampGames = 0;
       const totalGames = Math.max(1, p.stats.totalGames || recM.length || 1);
 
@@ -334,16 +313,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           }
         });
         mainChampGames = maxF;
-      } else {
-        const defaultChamps: Record<LoLRole, string> = {
-          TOP: 'Aatrox',
-          JNG: 'Lee Sin',
-          MID: 'Ahri',
-          ADC: 'Jinx',
-          SUP: 'Thresh',
-        };
-        mainChamp = defaultChamps[p.primaryRole] || 'Ahri';
-        mainChampGames = Math.round(totalGames * 0.65);
+      }
+
+      if (!mainChamp || mainChampGames === 0) {
+        return null;
       }
 
       const otpPercentage = Math.min(100, Number(((mainChampGames / totalGames) * 100).toFixed(1)));
@@ -355,6 +328,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         otpPercentage,
       };
     })
+    .filter((stat): stat is PlayerOTPStat => stat !== null)
     .sort((a, b) => b.otpPercentage - a.otpPercentage || b.champGames - a.champGames);
 
   const top1Champ = champWinrates[0];
