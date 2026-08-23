@@ -497,7 +497,76 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             )}
           </div>
 
-          {/* 2. 4 Category Columns Grid (KILLS, MUERTES, ASISTENCIAS, CS/MIN) */}
+          {/* 2. KDA SECTION (Podium Showcase) */}
+          <div className="bg-[#0b101c] border border-slate-800/90 rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg shadow-lime-950/10">
+            <div className="text-center space-y-0.5">
+              <h4 className="text-sm font-black tracking-widest text-[#c6f135] uppercase font-display flex items-center justify-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#c6f135]" />
+                <span>KDA</span>
+                <Sparkles className="w-4 h-4 text-[#c6f135]" />
+              </h4>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                Kills + Asistencias / Muertes
+              </p>
+            </div>
+
+            {kdaRank.length === 0 ? (
+              <div className="text-center py-6 text-xs text-slate-500">
+                No hay jugadores registrados en esta posición.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
+                {kdaRank.slice(0, 4).map((perf, index) => {
+                  const p = perf.player;
+                  const rankNumber = index + 1;
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => onSelectPlayer(p)}
+                      className="bg-[#070b13] hover:bg-[#0e1526] border border-slate-800/80 hover:border-lime-500/40 p-4 rounded-2xl transition-all cursor-pointer flex flex-col items-center text-center relative group shadow-sm hover:shadow-lime-950/20"
+                    >
+                      {/* Rank number left badge */}
+                      <span className="absolute top-3 left-3 text-xs font-mono font-bold text-slate-500 group-hover:text-lime-400">
+                        #{rankNumber}
+                      </span>
+
+                      {/* Avatar with level/rank badge */}
+                      <div className="relative mb-2 mt-1">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-700 group-hover:border-[#c6f135] transition-colors shadow-inner">
+                          <img
+                            src={p.avatarUrl || getProfileIconUrl(p.profileIconId)}
+                            alt={p.displayName}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {/* Number badge on top right */}
+                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#c6f135] text-black font-black text-xs flex items-center justify-center shadow-md font-mono border-2 border-[#070b13]">
+                          {rankNumber}
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <h5 className="text-xs font-bold text-white group-hover:text-[#c6f135] transition-colors truncate max-w-[120px]">
+                        {p.displayName}
+                      </h5>
+
+                      {/* KDA Value */}
+                      <div className="mt-2 text-center">
+                        <span className="text-2xl font-black font-mono text-[#c6f135] block">
+                          {perf.kda.toFixed(2)}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {perf.totalGames} partidas ({perf.winRate}% WR)
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* 3. 4 Category Columns Grid (KILLS, MUERTES, ASISTENCIAS, CS/MIN) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {/* 1. KILLS */}
             <CategoryRankingCard
@@ -544,7 +613,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             />
           </div>
 
-          {/* 3. NEW SECTION: META DE CAMPEONES & ONE-TRICK PONIES (2 Columns) */}
+          {/* 4. NEW SECTION: META DE CAMPEONES & ONE-TRICK PONIES (2 Columns) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
             {/* CARD 1: CAMPEÓN CON MAYOR WINRATE */}
@@ -773,7 +842,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
           </div>
 
-          {/* 4. NEW SECTION: CONTROL DE VISIÓN & WARDS (2 Columns) */}
+          {/* 5. NEW SECTION: CONTROL DE VISIÓN & WARDS (2 Columns) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
             {/* CARD 1: EL OJO QUE TODO LO VE (MAYOR PUNTUACIÓN DE VISIÓN) */}
@@ -990,75 +1059,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               )}
             </div>
 
-          </div>
-
-          {/* 5. KDA Podium Section */}
-          <div className="bg-[#0b101c] border border-slate-800/90 rounded-2xl p-5 sm:p-6 space-y-4">
-            <div className="text-center space-y-0.5">
-              <h4 className="text-sm font-black tracking-widest text-[#c6f135] uppercase font-display flex items-center justify-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#c6f135]" />
-                <span>KDA</span>
-                <Sparkles className="w-4 h-4 text-[#c6f135]" />
-              </h4>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Kills + Asistencias / Muertes
-              </p>
-            </div>
-
-            {kdaRank.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-500">
-                No hay jugadores registrados en esta posición.
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
-                {kdaRank.slice(0, 4).map((perf, index) => {
-                  const p = perf.player;
-                  const rankNumber = index + 1;
-                  return (
-                    <div
-                      key={p.id}
-                      onClick={() => onSelectPlayer(p)}
-                      className="bg-[#070b13] hover:bg-[#0e1526] border border-slate-800/80 hover:border-lime-500/40 p-4 rounded-2xl transition-all cursor-pointer flex flex-col items-center text-center relative group shadow-sm hover:shadow-lime-950/20"
-                    >
-                      {/* Rank number left badge */}
-                      <span className="absolute top-3 left-3 text-xs font-mono font-bold text-slate-500 group-hover:text-lime-400">
-                        #{rankNumber}
-                      </span>
-
-                      {/* Avatar with level/rank badge */}
-                      <div className="relative mb-2 mt-1">
-                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-700 group-hover:border-[#c6f135] transition-colors shadow-inner">
-                          <img
-                            src={p.avatarUrl || getProfileIconUrl(p.profileIconId)}
-                            alt={p.displayName}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        {/* Number badge on top right */}
-                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#c6f135] text-black font-black text-xs flex items-center justify-center shadow-md font-mono border-2 border-[#070b13]">
-                          {rankNumber}
-                        </div>
-                      </div>
-
-                      {/* Name */}
-                      <h5 className="text-xs font-bold text-white group-hover:text-[#c6f135] transition-colors truncate max-w-[120px]">
-                        {p.displayName}
-                      </h5>
-
-                      {/* KDA Value */}
-                      <div className="mt-2 text-center">
-                        <span className="text-2xl font-black font-mono text-[#c6f135] block">
-                          {perf.kda.toFixed(2)}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          {perf.totalGames} partidas ({perf.winRate}% WR)
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </div>
 
