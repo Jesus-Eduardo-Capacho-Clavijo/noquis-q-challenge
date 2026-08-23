@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Player, LoLRole } from '../types';
 import { RoleIcon } from './RoleIcon';
-import { getTierColorClass, getProfileIconUrl, getChampionIconUrl } from '../data/ddragon';
+import { getTierColorClass, getProfileIconUrl, getChampionIconUrl, formatChampionName } from '../data/ddragon';
 import {
   X,
   BarChart3,
@@ -224,8 +224,9 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
     if (topC.length > 0) {
       for (const tc of topC) {
-        const existing = champAggMap.get(tc.championName) || {
-          championName: tc.championName,
+        const cName = formatChampionName(tc.championName);
+        const existing = champAggMap.get(cName) || {
+          championName: cName,
           championId: tc.championId,
           games: 0,
           wins: 0,
@@ -236,12 +237,13 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         const curPw = existing.playerWins.get(p.id) || { player: p, wins: 0 };
         curPw.wins += tc.wins;
         existing.playerWins.set(p.id, curPw);
-        champAggMap.set(tc.championName, existing);
+        champAggMap.set(cName, existing);
       }
     } else if (recM.length > 0) {
       for (const m of recM) {
-        const existing = champAggMap.get(m.championName) || {
-          championName: m.championName,
+        const cName = formatChampionName(m.championName);
+        const existing = champAggMap.get(cName) || {
+          championName: cName,
           championId: m.championId,
           games: 0,
           wins: 0,
@@ -252,7 +254,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         const curPw = existing.playerWins.get(p.id) || { player: p, wins: 0 };
         if (m.win) curPw.wins += 1;
         existing.playerWins.set(p.id, curPw);
-        champAggMap.set(m.championName, existing);
+        champAggMap.set(cName, existing);
       }
     } else {
       const defaultChamps: Record<LoLRole, string> = {
@@ -262,7 +264,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         ADC: 'Jinx',
         SUP: 'Thresh',
       };
-      const champ = defaultChamps[p.primaryRole] || 'Ahri';
+      const champ = formatChampionName(defaultChamps[p.primaryRole] || 'Ahri');
       const existing = champAggMap.get(champ) || {
         championName: champ,
         games: 0,
@@ -295,7 +297,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         }
       });
       return {
-        championName: c.championName,
+        championName: formatChampionName(c.championName),
         championId: c.championId,
         games: c.games,
         wins: c.wins,
@@ -316,11 +318,14 @@ export const StatsModal: React.FC<StatsModalProps> = ({
       const totalGames = Math.max(1, p.stats.totalGames || recM.length || 1);
 
       if (topC.length > 0) {
-        mainChamp = topC[0].championName;
+        mainChamp = formatChampionName(topC[0].championName);
         mainChampGames = topC[0].games;
       } else if (recM.length > 0) {
         const freq = new Map<string, number>();
-        recM.forEach((m) => freq.set(m.championName, (freq.get(m.championName) || 0) + 1));
+        recM.forEach((m) => {
+          const cName = formatChampionName(m.championName);
+          freq.set(cName, (freq.get(cName) || 0) + 1);
+        });
         let maxF = 0;
         freq.forEach((cnt, name) => {
           if (cnt > maxF) {
@@ -332,7 +337,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
       } else {
         const defaultChamps: Record<LoLRole, string> = {
           TOP: 'Aatrox',
-          JNG: 'LeeSin',
+          JNG: 'Lee Sin',
           MID: 'Ahri',
           ADC: 'Jinx',
           SUP: 'Thresh',

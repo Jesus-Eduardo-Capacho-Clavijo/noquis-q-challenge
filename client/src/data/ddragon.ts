@@ -7,11 +7,98 @@ export function getProfileIconUrl(iconId?: number): string {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${id}.jpg`;
 }
 
+export const CHAMPION_NAME_MAP: Record<string, string> = {
+  MonkeyKing: 'Wukong',
+  monkeyking: 'Wukong',
+  Chogath: "Cho'Gath",
+  Kaisa: "Kai'Sa",
+  Khazix: "Kha'Zix",
+  KogMaw: "Kog'Maw",
+  Leblanc: 'LeBlanc',
+  RekSai: "Rek'Sai",
+  Velkoz: "Vel'Koz",
+  KSante: "K'Sante",
+  Belveth: "Bel'Veth",
+  DrMundo: 'Dr. Mundo',
+  JarvanIV: 'Jarvan IV',
+  MasterYi: 'Maestro Yi',
+  MissFortune: 'Miss Fortune',
+  TahmKench: 'Tahm Kench',
+  TwistedFate: 'Twisted Fate',
+  AurelionSol: 'Aurelion Sol',
+  XinZhao: 'Xin Zhao',
+  LeeSin: 'Lee Sin',
+  Renata: 'Renata Glasc',
+  Nunu: 'Nunu y Willump',
+};
+
+export const CHAMPION_DDRAGON_KEY_MAP: Record<string, string> = {
+  Wukong: 'MonkeyKing',
+  wukong: 'MonkeyKing',
+  "Cho'Gath": 'Chogath',
+  "chogath": 'Chogath',
+  "Kai'Sa": 'Kaisa',
+  "kaisa": 'Kaisa',
+  "Kha'Zix": 'Khazix',
+  "khazix": 'Khazix',
+  "Kog'Maw": 'KogMaw',
+  "kogmaw": 'KogMaw',
+  "Rek'Sai": 'RekSai',
+  "reksai": 'RekSai',
+  "Vel'Koz": 'Velkoz',
+  "velkoz": 'Velkoz',
+  "K'Sante": 'KSante',
+  "ksante": 'KSante',
+  "Bel'Veth": 'Belveth',
+  "belveth": 'Belveth',
+  'Dr. Mundo': 'DrMundo',
+  'Dr Mundo': 'DrMundo',
+  'drmundo': 'DrMundo',
+  'Jarvan IV': 'JarvanIV',
+  'jarvaniv': 'JarvanIV',
+  'Maestro Yi': 'MasterYi',
+  'Master Yi': 'MasterYi',
+  'masteryi': 'MasterYi',
+  'Miss Fortune': 'MissFortune',
+  'missfortune': 'MissFortune',
+  'Tahm Kench': 'TahmKench',
+  'tahmkench': 'TahmKench',
+  'Twisted Fate': 'TwistedFate',
+  'twistedfate': 'TwistedFate',
+  'Aurelion Sol': 'AurelionSol',
+  'aurelionsol': 'AurelionSol',
+  'Xin Zhao': 'XinZhao',
+  'xinzhao': 'XinZhao',
+  'Lee Sin': 'LeeSin',
+  'leesin': 'LeeSin',
+  'Renata Glasc': 'Renata',
+  'renataglasc': 'Renata',
+  'Nunu y Willump': 'Nunu',
+  'nunu': 'Nunu',
+};
+
+export function formatChampionName(name?: string): string {
+  if (!name) return '';
+  const trimmed = name.trim();
+  if (CHAMPION_NAME_MAP[trimmed]) return CHAMPION_NAME_MAP[trimmed];
+  
+  const lower = trimmed.toLowerCase();
+  for (const [rawKey, displayName] of Object.entries(CHAMPION_NAME_MAP)) {
+    if (rawKey.toLowerCase() === lower) return displayName;
+  }
+  return trimmed;
+}
+
 export function getChampionIconUrl(championName: string): string {
   if (!championName) return 'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg';
-  // Standardize name for ddragon
-  const formatted = championName.replace(/[^a-zA-Z0-9]/g, '');
-  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${formatted}.png`;
+  
+  const trimmed = championName.trim();
+  const ddragonKey =
+    CHAMPION_DDRAGON_KEY_MAP[trimmed] ||
+    CHAMPION_DDRAGON_KEY_MAP[trimmed.toLowerCase()] ||
+    trimmed.replace(/[^a-zA-Z0-9]/g, '');
+    
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${ddragonKey}.png`;
 }
 
 export function getItemIconUrl(itemId: number): string {

@@ -52,6 +52,42 @@ export function getRegionalRouting(region: RegionRouting): string {
   }
 }
 
+export const CHAMPION_NAME_MAP: Record<string, string> = {
+  MonkeyKing: 'Wukong',
+  monkeyking: 'Wukong',
+  Chogath: "Cho'Gath",
+  Kaisa: "Kai'Sa",
+  Khazix: "Kha'Zix",
+  KogMaw: "Kog'Maw",
+  Leblanc: 'LeBlanc',
+  RekSai: "Rek'Sai",
+  Velkoz: "Vel'Koz",
+  KSante: "K'Sante",
+  Belveth: "Bel'Veth",
+  DrMundo: 'Dr. Mundo',
+  JarvanIV: 'Jarvan IV',
+  MasterYi: 'Maestro Yi',
+  MissFortune: 'Miss Fortune',
+  TahmKench: 'Tahm Kench',
+  TwistedFate: 'Twisted Fate',
+  AurelionSol: 'Aurelion Sol',
+  XinZhao: 'Xin Zhao',
+  LeeSin: 'Lee Sin',
+  Renata: 'Renata Glasc',
+  Nunu: 'Nunu y Willump',
+};
+
+export function formatChampionName(name?: string): string {
+  if (!name) return '';
+  const trimmed = name.trim();
+  if (CHAMPION_NAME_MAP[trimmed]) return CHAMPION_NAME_MAP[trimmed];
+  const lower = trimmed.toLowerCase();
+  for (const [rawKey, displayName] of Object.entries(CHAMPION_NAME_MAP)) {
+    if (rawKey.toLowerCase() === lower) return displayName;
+  }
+  return trimmed;
+}
+
 const PERMANENT_RIOT_API_KEY = 'RGAPI-ef2ced72-6870-4868-8502-1e29271231fe';
 
 export class RiotService {
@@ -346,11 +382,12 @@ export class RiotService {
 
                 const won = Boolean(p.win);
                 matchSummaries.push(won ? 'W' : 'L');
+                const formattedChamp = formatChampionName(p.championName);
 
                 // Aggregate complete champion statistics across all 2026 SoloQ matches
-                const existing = champMap.get(p.championName) || {
+                const existing = champMap.get(formattedChamp) || {
                   championId: p.championId,
-                  championName: p.championName,
+                  championName: formattedChamp,
                   games: 0,
                   wins: 0,
                   losses: 0,
@@ -364,7 +401,7 @@ export class RiotService {
                 existing.kills += p.kills || 0;
                 existing.deaths += p.deaths || 0;
                 existing.assists += p.assists || 0;
-                champMap.set(p.championName, existing);
+                champMap.set(formattedChamp, existing);
 
                 // For the match history modal, keep the top 15 most recent detailed matches
                 if (fetchedMatches.length < 15) {
@@ -384,7 +421,7 @@ export class RiotService {
                       riotIdGameName: part.riotIdGameName || part.summonerName || 'Invocador',
                       riotIdTagline: part.riotIdTagline || '',
                       championId: part.championId,
-                      championName: part.championName,
+                      championName: formatChampionName(part.championName),
                       champLevel: part.champLevel || 1,
                       teamId: part.teamId || 100,
                       win: Boolean(part.win),

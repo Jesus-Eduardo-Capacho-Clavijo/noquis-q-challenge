@@ -6,6 +6,7 @@ import {
   getSpellIconUrl,
   getRuneIconUrl,
   getOpGgUrl,
+  formatChampionName,
 } from '../data/ddragon';
 import { RoleIcon } from './RoleIcon';
 import { PlayerAvatar } from './PlayerAvatar';
@@ -275,24 +276,29 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   // Extract all played champions for quick filter pills
   const playedChampionsMap = new Map<string, number>();
   displayMatches.forEach((m) => {
-    playedChampionsMap.set(m.championName, (playedChampionsMap.get(m.championName) || 0) + 1);
+    const cName = formatChampionName(m.championName);
+    playedChampionsMap.set(cName, (playedChampionsMap.get(cName) || 0) + 1);
   });
   if (player.stats.topChampions) {
     player.stats.topChampions.forEach((tc) => {
-      if (!playedChampionsMap.has(tc.championName)) {
-        playedChampionsMap.set(tc.championName, tc.games);
+      const cName = formatChampionName(tc.championName);
+      if (!playedChampionsMap.has(cName)) {
+        playedChampionsMap.set(cName, tc.games);
       }
     });
   }
-  if (selectedChampionFilter && !playedChampionsMap.has(selectedChampionFilter)) {
-    playedChampionsMap.set(selectedChampionFilter, 1);
+  if (selectedChampionFilter && !playedChampionsMap.has(formatChampionName(selectedChampionFilter))) {
+    playedChampionsMap.set(formatChampionName(selectedChampionFilter), 1);
   }
 
   // Filter matches if a champion filter is active
   let visibleMatches = displayMatches;
   if (selectedChampionFilter) {
+    const filterClean = formatChampionName(selectedChampionFilter).toLowerCase();
     const matched = displayMatches.filter(
-      (m) => m.championName.toLowerCase() === selectedChampionFilter.toLowerCase()
+      (m) =>
+        formatChampionName(m.championName).toLowerCase() === filterClean ||
+        m.championName.toLowerCase() === filterClean
     );
     if (matched.length > 0) {
       visibleMatches = matched;
@@ -577,10 +583,10 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   >
                     <img
                       src={getChampionIconUrl(cName)}
-                      alt={cName}
+                      alt={formatChampionName(cName)}
                       className="w-4 h-4 rounded-md object-cover"
                     />
-                    <span>{cName}</span>
+                    <span>{formatChampionName(cName)}</span>
                     <span className="text-[10px] opacity-80 font-mono">({count})</span>
                   </button>
                 );
@@ -594,13 +600,13 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   <div className="relative">
                     <img
                       src={getChampionIconUrl(selectedChampionFilter)}
-                      alt={selectedChampionFilter}
+                      alt={formatChampionName(selectedChampionFilter)}
                       className="w-8 h-8 rounded-xl object-cover border-2 border-emerald-400 shadow-md"
                     />
                   </div>
                   <div>
                     <span className="text-xs text-emerald-300 font-bold block">
-                      Filtrado exclusivamente por: <strong className="text-white text-sm">{selectedChampionFilter}</strong>
+                      Filtrado exclusivamente por: <strong className="text-white text-sm">{formatChampionName(selectedChampionFilter)}</strong>
                     </span>
                     <span className="text-[11px] text-slate-400 font-mono">
                       Mostrando {visibleMatches.length} {visibleMatches.length === 1 ? 'partida jugada' : 'partidas jugadas'} con este campeón
@@ -700,7 +706,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                             {isWin ? 'Victoria' : 'Derrota'}
                           </span>
                           <span className="text-xs font-bold text-white block truncate max-w-[100px]">
-                            {match.championName}
+                            {formatChampionName(match.championName)}
                           </span>
                           <span className="text-[11px] text-slate-400 font-mono block">
                             {durationMins}m {durationSecs}s
@@ -995,7 +1001,7 @@ const TeamScoreboardTable: React.FC<TeamScoreboardTableProps> = ({
                     {p.summonerName}
                   </span>
                   <span className="text-[10px] text-slate-500 font-mono block truncate">
-                    {p.championName}
+                    {formatChampionName(p.championName)}
                   </span>
                 </div>
               </div>
