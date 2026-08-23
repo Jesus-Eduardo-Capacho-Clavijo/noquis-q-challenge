@@ -155,7 +155,7 @@ class StorageService {
     }
     getApiKey() {
         const config = this.getConfig();
-        return (config.activeApiKey || process.env.RIOT_API_KEY || '').trim();
+        return (config.activeApiKey || process.env.RIOT_API_KEY || 'RGAPI-ef2ced72-6870-4868-8502-1e29271231fe').trim();
     }
     setApiKey(key) {
         const config = this.getConfig();

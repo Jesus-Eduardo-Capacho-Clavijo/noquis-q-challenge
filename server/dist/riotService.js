@@ -36,11 +36,12 @@ function getRegionalRouting(region) {
             return 'americas';
     }
 }
+const PERMANENT_RIOT_API_KEY = 'RGAPI-ef2ced72-6870-4868-8502-1e29271231fe';
 class RiotService {
-    apiKey = '';
+    apiKey = PERMANENT_RIOT_API_KEY;
     championMap = new Map();
     constructor(apiKey) {
-        this.apiKey = apiKey || process.env.RIOT_API_KEY || '';
+        this.apiKey = (apiKey || process.env.RIOT_API_KEY || PERMANENT_RIOT_API_KEY).trim();
     }
     async ensureChampionMap() {
         if (this.championMap.size > 0)
@@ -58,18 +59,20 @@ class RiotService {
         }
     }
     setApiKey(key) {
-        this.apiKey = key.trim();
+        this.apiKey = (key || PERMANENT_RIOT_API_KEY).trim();
         // Invalidate cache on key change
         cache.clear();
     }
     getApiKey() {
-        return this.apiKey;
+        return (this.apiKey || process.env.RIOT_API_KEY || PERMANENT_RIOT_API_KEY).trim();
     }
     hasApiKey() {
-        return Boolean(this.apiKey && this.apiKey.startsWith('RGAPI-'));
+        const key = this.getApiKey();
+        return Boolean(key && key.startsWith('RGAPI-'));
     }
     async makeRequest(url, ttlMs = 180000) {
-        if (!this.hasApiKey()) {
+        const keyToUse = this.getApiKey();
+        if (!keyToUse || !keyToUse.startsWith('RGAPI-')) {
             throw new Error('No Riot API key configured');
         }
         const now = Date.now();
